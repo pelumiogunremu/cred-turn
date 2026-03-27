@@ -18,12 +18,12 @@ interface InvoiceItemProps {
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
     case 'pending': return 'bg-orange-100 text-orange-700';
-    case 'pending acceptance': return 'bg-amber-100 text-amber-700';
-    case 'accepted': return 'bg-emerald-100 text-emerald-700';
+    case 'not due': return 'bg-teal-100 text-teal-700';
+    case 'due': return 'bg-amber-100 text-amber-700';
+    case 'paid': return 'bg-emerald-100 text-emerald-700';
     case 'rejected': return 'bg-red-100 text-red-700';
     case 'expired': return 'bg-gray-100 text-gray-700';
     case 'partially paid': return 'bg-blue-100 text-blue-700';
-    case 'unpaid': return 'bg-surface-container-high text-on-surface-variant';
     case 'overdue': return 'bg-red-100 text-red-700';
     default: return 'bg-surface-container-high text-on-surface-variant';
   }
@@ -34,7 +34,7 @@ export default function InvoiceItem({ type, name, reference, amount, status, isM
   const Icon = isSent ? FileUp : DownloadIcon;
 
   return (
-    <div onClick={onClick} className="px-8 py-5 flex items-center justify-between hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
+    <div onClick={onClick} className="px-5 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 hover:bg-surface-container-low/50 transition-colors cursor-pointer group">
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${isSent ? 'bg-surface-container-high text-on-surface-variant' : 'bg-emerald-50 text-primary'}`}>
           <Icon className="w-5 h-5" />
@@ -50,12 +50,6 @@ export default function InvoiceItem({ type, name, reference, amount, status, isM
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <div className="text-right">
-          <p className="font-bold text-on-surface text-base">{amount}</p>
-          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getStatusStyle(status)}`}>
-            {status}
-          </span>
-        </div>
         {showPayButton && onPay && (
           <button 
             onClick={onPay}
@@ -64,6 +58,12 @@ export default function InvoiceItem({ type, name, reference, amount, status, isM
             Pay Now
           </button>
         )}
+        <div className="text-right">
+          <p className="font-bold text-on-surface text-base">{amount}</p>
+          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getStatusStyle(status)}`}>
+            {status}
+          </span>
+        </div>
         {onDownload && (
           <button 
             onClick={onDownload}

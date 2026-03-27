@@ -4,7 +4,7 @@ export type InvoiceState = 'Not Due' | 'Almost Due' | 'Due' | 'Overdue';
 
 export const invoiceService = {
   getInvoiceState: (invoice: Invoice): InvoiceState => {
-    if (invoice.status === 'Paid' || invoice.status === 'Completed') return 'Not Due';
+    if (invoice.status === 'Paid') return 'Not Due';
     
     const dueDate = new Date(invoice.dueDate);
     const today = new Date();
@@ -23,7 +23,7 @@ export const invoiceService = {
   },
 
   isPaymentEnabled: (invoice: Invoice): boolean => {
-    const allowedStatuses = ['Accepted', 'Unpaid', 'Overdue', 'Partially Paid'];
+    const allowedStatuses = ['Not Due', 'Due', 'Overdue', 'Partially Paid'];
     return allowedStatuses.includes(invoice.status);
   }
 };

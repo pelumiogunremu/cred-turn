@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Invoice } from '../data/mockData';
 import { generateInvoicePDF } from '../utils/pdfGenerator';
 import { useAppContext } from '../context/AppContext';
+import { StatusBadge, EmptyState } from './ui';
 
 type TabType = 'all' | 'created' | 'received';
 
@@ -23,14 +24,14 @@ export default function TransactionList({ invoices, activeTab, onSelectInvoice, 
         icon: Clock,
         animate: 'animate-pulse'
       };
-      case 'Pending Acceptance': return { 
-        color: 'bg-amber-100 text-amber-700 border-amber-200', 
-        icon: Clock,
-        animate: 'animate-pulse'
-      };
-      case 'Accepted': return { 
+      case 'Not Due': return { 
         color: 'bg-emerald-100 text-emerald-700 border-emerald-200', 
         icon: CheckCircle2,
+        animate: ''
+      };
+      case 'Due': return { 
+        color: 'bg-amber-100 text-amber-700 border-amber-200', 
+        icon: Clock,
         animate: ''
       };
       case 'Rejected': return { 
@@ -43,10 +44,14 @@ export default function TransactionList({ invoices, activeTab, onSelectInvoice, 
         icon: AlertCircle,
         animate: ''
       };
-      case 'Paid':
-      case 'Completed': return { 
+      case 'Paid': return { 
         color: 'bg-emerald-100 text-emerald-700 border-emerald-200', 
         icon: CheckCircle2,
+        animate: ''
+      };
+      case 'Partially Paid': return { 
+        color: 'bg-blue-100 text-blue-700 border-blue-200', 
+        icon: Clock,
         animate: ''
       };
       case 'Overdue': return { 
@@ -66,14 +71,14 @@ export default function TransactionList({ invoices, activeTab, onSelectInvoice, 
     const isBuyer = invoice.type === 'received';
     const isSeller = invoice.type === 'sent';
     
-    if (isBuyer && ['Unpaid', 'Overdue', 'Partially Paid', 'Accepted'].includes(invoice.status)) {
+    if (isBuyer && ['Not Due', 'Due', 'Overdue', 'Partially Paid'].includes(invoice.status)) {
       return (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onPay(invoice.id);
           }}
-          className="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
+          className="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
         >
           Pay Now
           <ArrowRight className="w-3 h-3" />
@@ -137,7 +142,7 @@ export default function TransactionList({ invoices, activeTab, onSelectInvoice, 
                   exit={{ opacity: 0, scale: 0.95 }}
                   key={invoice.id}
                   onClick={() => onSelectInvoice(invoice)}
-                  className="bg-white p-5 rounded-3xl border border-outline-variant/15 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer group relative overflow-hidden"
+                  className="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/15 flex flex-col md:flex-row md:items-center justify-between hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer group relative overflow-hidden"
                 >
                   <div className="flex items-center gap-5 mb-4 md:mb-0">
                     <div className="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
@@ -161,13 +166,10 @@ export default function TransactionList({ invoices, activeTab, onSelectInvoice, 
 
                   <div className="flex items-center justify-between md:justify-end gap-8">
                     <div className="text-left md:text-right">
-                      <p className="text-xl font-extrabold text-on-surface mb-1 group-hover:scale-105 transition-transform origin-right">
+                      <p className="text-lg md:text-xl font-extrabold text-on-surface mb-1 group-hover:scale-105 transition-transform origin-right">
                         ₦{invoice.amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                       </p>
-                      <div className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${status.color} ${status.animate}`}>
-                        <StatusIcon className="w-3 h-3" />
-                        {invoice.status}
-                      </div>
+                      <StatusBadge status={invoice.status} />
                     </div>
 
                     {/* Quick Actions */}

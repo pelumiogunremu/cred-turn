@@ -62,6 +62,19 @@
   --radius-xl: 1.5rem;
 }
 
+/* =====================================================
+   Global Scrollbar Eradication 
+   ===================================================== */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+
+
 
 body {
   min-height: max(600px, 100dvh);
@@ -85,4 +98,118 @@ body {
 
 .bg-primary-gradient {
   background: linear-gradient(135deg, #006c49 0%, #10b981 100%);
+}
+
+
+/* =====================================================
+   CredTurn Design System — Semantic Utility Classes
+   ===================================================== */
+
+/* Standard form input — use everywhere instead of raw classes */
+.ct-input {
+  @apply w-full bg-surface-container-low border border-outline-variant/30 rounded-xl 
+         py-3.5 px-4 text-on-surface placeholder:text-on-surface-variant/40 
+         focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white 
+         transition-all outline-none font-medium text-sm;
+}
+
+/* Standard content card */
+.ct-card {
+  @apply bg-surface-container-lowest rounded-2xl border border-outline-variant/15 shadow-sm;
+}
+
+/* Standard primary button */
+.ct-btn-primary {
+  @apply w-full py-4 bg-primary text-on-primary font-headline font-bold text-sm rounded-2xl 
+         shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] 
+         transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 
+         disabled:cursor-not-allowed;
+}
+
+/* Standard secondary/ghost button */
+.ct-btn-secondary {
+  @apply w-full py-4 bg-surface-container-low text-on-surface font-bold text-sm rounded-2xl 
+         hover:bg-surface-container-high active:scale-[0.98] transition-all duration-200 
+         flex items-center justify-center gap-2;
+}
+
+/* Standard icon back button */
+.ct-btn-back {
+  @apply w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center 
+         text-on-surface-variant hover:bg-surface-container-high transition-colors shrink-0;
+}
+
+/* Standard form label */
+.ct-label {
+  @apply block text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/70 mb-1.5 ml-0.5;
+}
+
+/* Standard page section header (back + title) */
+.ct-page-header {
+  @apply flex items-center gap-4 mb-8;
+}
+
+/* Standard section title (h2) */
+.ct-section-title {
+  @apply font-headline text-lg font-bold text-on-surface flex items-center gap-2;
+}
+
+/* Standard status badge */
+.ct-badge {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold 
+         uppercase tracking-wider border;
+}
+
+/* =====================================================
+   Dark Mode Token Overrides
+   ===================================================== */
+
+.dark {
+  /* Backgrounds — deep slate hierarchy */
+  --color-background:               #0d1117;
+  --color-surface:                  #0d1117;
+  --color-surface-bright:           #161b22;
+  --color-surface-dim:              #090d12;
+
+  /* Container levels: lowest → highest = darkest → lightest */
+  --color-surface-container-lowest: #010409;
+  --color-surface-container-low:    #13181f;
+  --color-surface-container:        #161b22;
+  --color-surface-container-high:   #1c2128;
+  --color-surface-container-highest:#21262d;
+
+  /* Text */
+  --color-on-background:            #e6edf3;
+  --color-on-surface:               #e6edf3;
+  --color-on-surface-variant:       #8b949e;
+
+  /* Borders */
+  --color-outline:                  #3d444d;
+  --color-outline-variant:          #21262d;
+  --color-surface-variant:          #1c2128;
+
+  /* Primary stays vivid but slightly brightened */
+  --color-primary:                  #10b981;
+  --color-primary-container:        #064e35;
+  --color-on-primary:               #ffffff;
+  --color-on-primary-container:     #6ffbbe;
+
+  /* Error */
+  --color-error:                    #f87171;
+  --color-error-container:          #7f1d1d;
+
+  /* Inverse for toasts */
+  --color-inverse-surface:          #e6edf3;
+  --color-inverse-on-surface:       #0d1117;
+  --color-inverse-primary:          #006c49;
+}
+
+/* Dark mode: focus input bg */
+.dark .ct-input:focus {
+  @apply bg-surface-container-high;
+}
+
+/* Dark mode: glass card */
+.dark .glass-card {
+  background: rgba(13, 17, 23, 0.85);
 }

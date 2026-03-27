@@ -5,9 +5,18 @@ import { useAppContext } from '../../context/AppContext';
 
 export default function ScoreModal() {
   const navigate = useNavigate();
-  const { isScoreModalOpen, setIsScoreModalOpen, credTurnScore } = useAppContext();
-
+  const { isScoreModalOpen, setIsScoreModalOpen, credTurnScore, invoices } = useAppContext();
+  
   if (!isScoreModalOpen) return null;
+
+  const overdueCount = invoices.filter(inv => inv.status === 'Overdue').length;
+  
+  const getConsistencyLabel = () => {
+    if (invoices.length === 0) return 'None';
+    if (credTurnScore >= 80) return 'Excellent';
+    if (credTurnScore >= 60) return 'Fair';
+    return 'Poor';
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
@@ -15,7 +24,7 @@ export default function ScoreModal() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/20"
+        className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-outline-variant/20"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold font-headline">CredTurn Score</h2>
@@ -48,7 +57,7 @@ export default function ScoreModal() {
                   <p className="text-xs text-on-surface-variant">On-time payments</p>
                 </div>
               </div>
-              <span className="text-primary font-bold text-sm">Excellent</span>
+              <span className="text-primary font-bold text-sm">{getConsistencyLabel()}</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
               <div className="flex items-center gap-3">
@@ -58,7 +67,7 @@ export default function ScoreModal() {
                   <p className="text-xs text-on-surface-variant">Past defaults</p>
                 </div>
               </div>
-              <span className="text-emerald-600 font-bold text-sm">0 Defaults</span>
+              <span className="text-emerald-600 font-bold text-sm">{overdueCount} {overdueCount === 1 ? 'Default' : 'Defaults'}</span>
             </div>
           </div>
 

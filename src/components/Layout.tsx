@@ -119,8 +119,8 @@ export default function Layout() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending': return 'bg-orange-100 text-orange-700 border-orange-200';
-      case 'Paid':
-      case 'Completed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'Paid': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'Partially Paid': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'Overdue': return 'bg-red-100 text-red-700 border-red-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }

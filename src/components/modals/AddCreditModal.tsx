@@ -27,7 +27,7 @@ export default function AddCreditModal({ isOpen, onClose, onSave }: AddCreditMod
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/20"
+        className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-outline-variant/20"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold font-headline">Add Credit Manually</h2>

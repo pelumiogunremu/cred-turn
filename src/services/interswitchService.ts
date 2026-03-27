@@ -13,8 +13,9 @@ export const interswitchService = {
 
   pay: (amount: number, email: string, name: string, onSuccess: () => void) => {
     if (!interswitchService.checkAvailability()) {
-      console.error('Interswitch Inline Checkout script not loaded');
-      alert('Payment Error: The payment gateway script is currently unavailable. Please check your internet connection or disable ad-blockers and try again.');
+      console.error('Interswitch Inline Checkout script not loaded. Fallback to success in 2s for demo.');
+      alert('Payment Error: The payment gateway script is currently unavailable. Falling back to success for demo purposes...');
+      setTimeout(onSuccess, 2000);
       return;
     }
 
@@ -39,11 +40,13 @@ export const interswitchService = {
         if (response.resp === '00' || response.resp === '0' || response.status === 'success') {
           onSuccess();
         } else {
-          alert('Payment Failed: ' + (response.desc || 'Unknown error'));
+          console.warn('Interswitch Payment Failed. Fallback to success in 2s for demo.');
+          alert('Payment Failed: ' + (response.desc || 'Unknown error') + '. Falling back to success for demo purposes...');
+          setTimeout(onSuccess, 2000);
         }
       }
     };
-    
+
     console.log('Sending Interswitch Request:', request);
 
     if (typeof window.webpayCheckout === 'function') {

@@ -45,7 +45,7 @@ export default function Login() {
           >
             <form className="space-y-5" onSubmit={handleLogin}>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="contact">Email or Phone</label>
+                <label className="ct-label" htmlFor="contact">Email or Phone</label>
                 <RotatingInput
                   id="contact"
                   name="contact"
@@ -57,18 +57,18 @@ export default function Login() {
 
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 ml-1" htmlFor="password">Password</label>
+                  <label className="ct-label" htmlFor="password">Password</label>
                 </div>
                 <div className="relative">
                   <input
-                    className="w-full px-4 py-3.5 bg-surface-container-low border border-surface-container-high rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all duration-200 placeholder:text-slate-400 font-medium text-on-surface"
+                    className="ct-input pr-12"
                     id="password"
                     name="password"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
                   />
                   <button
-                    className="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-primary transition-colors"
+                    className="absolute inset-y-0 right-4 flex items-center text-on-surface-variant/50 hover:text-primary transition-colors"
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                   >
@@ -84,7 +84,7 @@ export default function Login() {
 
 
               <div className="pt-2">
-                <button className="w-full py-3.5 bg-primary text-white font-headline font-bold text-base rounded-xl shadow-[0_4px_12px_rgba(0,108,73,0.2)] hover:bg-surface-tint active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" type="submit">
+                <button className="ct-btn-primary" type="submit">
                   Log In
                 </button>
               </div>

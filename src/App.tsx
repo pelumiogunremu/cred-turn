@@ -13,6 +13,13 @@ import Payments from './pages/Payments';
 import SearchResults from './pages/SearchResults';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import CardPage from './pages/CardPage';
+import EditProfilePage from './pages/EditProfilePage';
+import SecurityPage from './pages/SecurityPage';
+import NotificationPrefsPage from './pages/NotificationPrefsPage';
+import ScoreDetailsPage from './pages/ScoreDetailsPage';
+import PaymentMethodsPage from './pages/PaymentMethodsPage';
+import HelpPage from './pages/HelpPage';
 import { AppProvider } from './context/AppContext';
 
 
@@ -30,12 +37,19 @@ export default function App() {
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
+            <Route path="/profile/security" element={<SecurityPage />} />
+            <Route path="/profile/notifications" element={<NotificationPrefsPage />} />
+            <Route path="/profile/score" element={<ScoreDetailsPage />} />
+            <Route path="/profile/payment-methods" element={<PaymentMethodsPage />} />
+            <Route path="/profile/help" element={<HelpPage />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/invoice/new" element={<InvoiceNew />} />
             <Route path="/invoice/:id" element={<InvoiceDetail />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/card" element={<CardPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

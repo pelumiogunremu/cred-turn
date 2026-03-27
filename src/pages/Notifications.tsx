@@ -1,6 +1,7 @@
-import { ArrowLeft, Bell } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { PageHeader } from '../components/ui';
 
 export default function Notifications() {
   const navigate = useNavigate();
@@ -21,15 +22,7 @@ export default function Notifications() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 pt-8 pb-32">
-      <div className="flex items-center gap-4 mb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-low hover:bg-surface-container-high transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-on-surface" />
-        </button>
-        <h1 className="font-headline text-2xl font-bold text-on-surface">Notifications</h1>
-      </div>
+      <PageHeader title="Notifications" onBack={() => navigate(-1)} />
 
 
       {notifications.length > 0 ? (

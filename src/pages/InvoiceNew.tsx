@@ -8,7 +8,7 @@ type LineItem = { id: number; description: string; amount: string };
 
 export default function InvoiceNew() {
   const navigate = useNavigate();
-  const { addInvoice } = useAppContext();
+  const { addInvoice, userProfile } = useAppContext();
   
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -48,10 +48,10 @@ export default function InvoiceNew() {
       outstandingBalance: parseFloat(totalAmount),
       date: invoiceDate,
       dueDate: dueDate,
-      status: 'Pending Acceptance',
+      status: 'Pending',
       category: 'General',
       buyer: clientName,
-      seller: 'Chioma', // Current user
+      seller: userProfile.name, // FIX m2: Use dynamic user name
       type: 'sent',
       description: items[0]?.description || 'Services rendered'
     };
@@ -61,7 +61,7 @@ export default function InvoiceNew() {
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-6 pt-8 pb-32">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 pb-32">
       <InvoiceHeader onBack={() => navigate(-1)} />
 
       <form onSubmit={handleSubmit} className="space-y-8">

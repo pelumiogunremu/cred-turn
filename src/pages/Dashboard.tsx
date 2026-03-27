@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Invoice } from '../data/mockData';
 import { useAppContext } from '../context/AppContext';
@@ -20,10 +20,46 @@ export default function Dashboard() {
     userProfile,
     invoices,
     setInvoices,
-    showToast
+    showToast,
+    setIncomingInvoice
   } = useAppContext();
   
   const [currentModeIndex, setCurrentModeIndex] = useState(0);
+
+  // FEATURE: Simulated Login Invoice Intercept (One-time per session)
+  useEffect(() => {
+    const hasShown = sessionStorage.getItem('credturn_hasShownStartupInvoice');
+    if (!hasShown) {
+      sessionStorage.setItem('credturn_hasShownStartupInvoice', 'true');
+      const businesses = [
+        { name: 'Emeka Wholesalers', desc: 'Q3 Restock Supplies', category: 'Inventory' },
+        { name: 'Mama Joy Trading', desc: 'Bulk Rice & Flour', category: 'Food & Beverage' },
+        { name: 'Chinedu Electronics', desc: 'Office HVAC Repair', category: 'Maintenance' },
+        { name: 'Alaba Market Supplies', desc: 'Generator Servicing', category: 'Equipment' },
+        { name: 'Iya Basira Foods', desc: 'Weekly Catering', category: 'Food & Beverage' }
+      ];
+      const biz = businesses[Math.floor(Math.random() * businesses.length)];
+      const randomAmt = Math.floor(Math.random() * 800000) + 15000;
+
+      setTimeout(() => {
+        setIncomingInvoice({
+          id: `inc-${Date.now()}`,
+          name: biz.desc,
+          reference: `INV-${Math.floor(Math.random() * 90000) + 10000}`,
+          amount: randomAmt,
+          outstandingBalance: randomAmt,
+          status: 'Pending',
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          category: biz.category,
+          buyer: userProfile.name,
+          seller: biz.name,
+          type: 'received',
+          expiresAt: Date.now() + 60000 // 1 minute to accept
+        });
+      }, 1500); // Wait 1.5 seconds after dashboard load
+    }
+  }, [setIncomingInvoice, userProfile.name]);
 
 
   const [isCreditVisible, setIsCreditVisible] = useState(true);
@@ -33,16 +69,16 @@ export default function Dashboard() {
 
   // Calculate Outstanding Credit dynamically: sum of unpaid/partially paid received invoices
   const outstandingCredit = invoices
-    .filter(inv => inv.type === 'received' && ['Pending', 'Unpaid', 'Overdue', 'Partially Paid', 'Accepted'].includes(inv.status))
+    .filter(inv => inv.type === 'received' && ['Pending', 'Not Due', 'Due', 'Overdue', 'Partially Paid'].includes(inv.status))
     .reduce((sum, inv) => sum + inv.outstandingBalance, 0);
 
   // Find the earliest due invoice
   const nextPayment = invoices
-    .filter(inv => inv.type === 'received' && ['Accepted', 'Unpaid', 'Partially Paid', 'Overdue'].includes(inv.status))
+    .filter(inv => inv.type === 'received' && ['Not Due', 'Due', 'Partially Paid', 'Overdue'].includes(inv.status))
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
 
-  const invoicesCreated = invoices.filter(inv => inv.type === 'sent').slice(0, 3);
-  const invoicesReceived = invoices.filter(inv => inv.type === 'received').slice(0, 3);
+  const invoicesCreated = invoices.filter(inv => inv.type === 'sent').slice(0, 4);
+  const invoicesReceived = invoices.filter(inv => inv.type === 'received').slice(0, 4);
 
 
   const handleAddCredit = (amount: string, desc: string) => {
@@ -53,13 +89,13 @@ export default function Dashboard() {
         reference: `MAN-${Math.floor(Math.random() * 10000)}`,
         amount: parseFloat(amount),
         outstandingBalance: parseFloat(amount),
-        status: 'Unpaid',
+        status: 'Due',
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         category: 'Self-reported credit',
         buyer: userProfile.name,
-        seller: desc || 'Manual Entry',
-        type: 'sent',
+        seller: desc || 'Unknown Creditor',
+        type: 'received', // FIX m3: Manual credits are money owed (received invoices)
         isManualEntry: true,
         contributesToScore: false
       };
@@ -80,13 +116,9 @@ export default function Dashboard() {
             isVisible={isCreditVisible} 
             onToggleVisibility={() => setIsCreditVisible(!isCreditVisible)}
             onAddCredit={() => setIsAddCreditModalOpen(true)}
-            onRepay={() => {
-              if (nextPayment) {
-                navigate('/payments', { state: { invoiceId: nextPayment.id } });
-              } else {
-                navigate('/payments');
-              }
-            }}
+            onRepay={() => navigate('/transactions', { state: { tab: 'received' } })}
+            onGoToCard={() => navigate('/card')}
+            onPayNow={(invoiceId: string) => navigate('/payments', { state: { invoiceId } })}
             nextPayment={nextPayment}
           />
           <CredTurnScoreCard 
@@ -94,7 +126,7 @@ export default function Dashboard() {
             onOpenModal={() => setIsScoreModalOpen(true)} 
             onIncreaseScore={() => navigate('/payments')}
           />
-          <PaymentModesCarousel onSelect={() => navigate('/payments')} />
+          <PaymentModesCarousel onNavigateToPayments={() => navigate('/payments')} />
         </div>
 
         {/* Right Column */}

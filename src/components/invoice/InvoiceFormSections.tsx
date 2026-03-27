@@ -1,16 +1,21 @@
-import { ArrowLeft, User, Calendar, DollarSign, FileText, Send, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowLeft, User, Calendar, FileText, Send, Plus, Trash2, CalendarDays, Banknote } from 'lucide-react';
+import { FormField, SectionCard, SectionTitle } from '../ui';
 
 type LineItem = { id: number; description: string; amount: string };
 
+// Shared uniform input class — no special overrides per field
+const INPUT_CLS = "w-full px-4 py-3.5 bg-surface-container-low border border-outline-variant/30 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all font-medium text-on-surface placeholder:text-on-surface-variant/40 text-sm";
+
 export function InvoiceHeader({ onBack }: { onBack: () => void }) {
   return (
-    <div className="flex items-center gap-4 mb-8">
-      <button type="button" onClick={onBack} className="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+    <div className="ct-page-header">
+      <button type="button" onClick={onBack} className="ct-btn-back">
         <ArrowLeft className="w-5 h-5" />
       </button>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-on-surface">Create Invoice</h1>
-        <p className="text-sm text-on-surface-variant font-medium">Request payment or settlement</p>
+        <h1 className="text-2xl font-bold tracking-tight text-on-surface font-headline">Create Invoice</h1>
+        <p className="text-sm text-on-surface-variant font-medium mt-0.5">Request payment or settlement</p>
       </div>
     </div>
   );
@@ -23,39 +28,75 @@ export function ClientDetailsSection({
   clientEmail: string, setClientEmail: (v: string) => void 
 }) {
   return (
-    <section className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/15 shadow-sm space-y-6">
-      <h2 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
-        <User className="w-5 h-5 text-primary" />
-        Client Details
-      </h2>
-      
+    <SectionCard>
+      <SectionTitle icon={User}>Client Details</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1" htmlFor="clientName">Client Name / Company</label>
-          <input 
-            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-on-surface placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white dark:focus:bg-zinc-900 transition-all outline-none" 
-            id="clientName" 
-            placeholder="e.g. Tunde Enterprise" 
-            required 
-            type="text" 
+        <FormField label="Client Name / Company" id="clientName">
+          <input
+            id="clientName"
+            type="text"
+            className={INPUT_CLS}
+            placeholder="e.g. Tunde Enterprise"
+            required
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
           />
-        </div>
-        <div className="space-y-2">
-          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1" htmlFor="clientEmail">Client Email</label>
-          <input 
-            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-on-surface placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white dark:focus:bg-zinc-900 transition-all outline-none" 
-            id="clientEmail" 
-            placeholder="billing@tunde.com" 
-            required 
-            type="email" 
+        </FormField>
+        <FormField label="Client Email" id="clientEmail">
+          <input
+            id="clientEmail"
+            type="email"
+            className={INPUT_CLS}
+            placeholder="billing@tunde.com"
+            required
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
           />
+        </FormField>
+      </div>
+    </SectionCard>
+  );
+}
+
+// Modern date picker with a visible calendar trigger button
+function ModernDatePicker({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const displayValue = value
+    ? new Date(value + 'T00:00').toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  return (
+    <FormField label={label} id={id}>
+      <div className="relative group">
+        {/* Hidden real date input covering the whole area */}
+        <input
+          id={id}
+          type="date"
+          required
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+        />
+        {/* Visible styled display */}
+        <div
+          className={`${INPUT_CLS} flex items-center justify-between group-hover:border-primary transition-colors`}
+        >
+          <span className={value ? 'text-on-surface' : 'text-on-surface-variant/40'}>
+            {displayValue || 'Select date'}
+          </span>
+          <CalendarDays className="w-4 h-4 text-primary shrink-0" />
         </div>
       </div>
-    </section>
+    </FormField>
   );
 }
 
@@ -66,37 +107,13 @@ export function InvoiceDetailsSection({
   dueDate: string, setDueDate: (v: string) => void
 }) {
   return (
-    <section className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/15 shadow-sm space-y-6">
-      <h2 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
-        <Calendar className="w-5 h-5 text-primary" />
-        Invoice Details
-      </h2>
-      
+    <SectionCard>
+      <SectionTitle icon={Calendar}>Invoice Details</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1" htmlFor="invoiceDate">Invoice Date</label>
-          <input 
-            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white dark:focus:bg-zinc-900 transition-all outline-none" 
-            id="invoiceDate" 
-            required 
-            type="date" 
-            value={invoiceDate}
-            onChange={(e) => setInvoiceDate(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="block font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1" htmlFor="dueDate">Due Date</label>
-          <input 
-            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white dark:focus:bg-zinc-900 transition-all outline-none" 
-            id="dueDate" 
-            required 
-            type="date" 
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </div>
+        <ModernDatePicker id="invoiceDate" label="Invoice Date" value={invoiceDate} onChange={setInvoiceDate} />
+        <ModernDatePicker id="dueDate" label="Due Date" value={dueDate} onChange={setDueDate} />
       </div>
-    </section>
+    </SectionCard>
   );
 }
 
@@ -108,53 +125,47 @@ export function LineItemsSection({ items, onAddItem, onRemoveItem, onItemChange,
   totalAmount: string 
 }) {
   return (
-    <section className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/15 shadow-sm space-y-6">
+    <SectionCard>
       <div className="flex items-center justify-between">
-        <h2 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
-          <FileText className="w-5 h-5 text-primary" />
-          Line Items
-        </h2>
-        <button type="button" onClick={onAddItem} className="text-sm font-bold text-primary hover:text-emerald-600 flex items-center gap-1 bg-primary/10 px-3 py-1.5 rounded-lg transition-colors">
+        <SectionTitle icon={FileText}>Line Items</SectionTitle>
+        <button type="button" onClick={onAddItem} className="text-sm font-bold text-primary hover:text-primary/80 flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-xl transition-colors">
           <Plus className="w-4 h-4" /> Add Item
         </button>
       </div>
       
       <div className="space-y-4">
         {items.map((item, index) => (
-          <div key={item.id} className="flex items-start gap-4 p-4 bg-surface-container-low/50 rounded-xl border border-outline-variant/10">
+          <div key={item.id} className="flex items-start gap-4 p-4 bg-surface-container-low/60 rounded-2xl border border-outline-variant/10">
             <div className="flex-grow space-y-4">
-              <div className="space-y-2">
-                <label className="block font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1">Description</label>
+              <FormField label="Description">
                 <input
-                  className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg py-2.5 px-3 text-sm text-on-surface placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                  type="text"
+                  className={INPUT_CLS}
                   placeholder="Service or product description"
                   required
-                  type="text"
                   value={item.description}
                   onChange={(e) => onItemChange(index, 'description', e.target.value)}
                 />
-              </div>
-              <div className="space-y-2">
-                <label className="block font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/70 ml-1">Amount (₦)</label>
+              </FormField>
+              <FormField label="Amount (₦)">
+                {/* FIX: ₦ symbol inside label, not overlapping the input value */}
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-zinc-400 font-bold">₦</span>
-                  </div>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/60 font-bold text-sm pointer-events-none select-none z-10">₦</span>
                   <input
-                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg py-2.5 pl-9 pr-3 text-sm text-on-surface placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    className={`${INPUT_CLS} pl-8`}
                     placeholder="0.00"
                     required
                     type="number"
                     min="0"
                     step="0.01"
-                    value={item.amount}
+                    value={item.amount === '' ? '' : item.amount}
                     onChange={(e) => onItemChange(index, 'amount', e.target.value)}
                   />
                 </div>
-              </div>
+              </FormField>
             </div>
             {items.length > 1 && (
-              <button type="button" onClick={() => onRemoveItem(item.id)} className="mt-6 p-2 text-error/70 hover:text-error hover:bg-error/10 rounded-lg transition-colors">
+              <button type="button" onClick={() => onRemoveItem(item.id)} className="mt-8 p-2.5 text-error/60 hover:text-error hover:bg-error/10 rounded-xl transition-colors">
                 <Trash2 className="w-5 h-5" />
               </button>
             )}
@@ -178,20 +189,22 @@ export function LineItemsSection({ items, onAddItem, onRemoveItem, onItemChange,
           </div>
         </div>
       </div>
-    </section>
+    </SectionCard>
   );
 }
 
 export function InvoiceActions({ onCancel }: { onCancel: () => void }) {
   return (
-    <div className="flex gap-4 pt-4">
-      <button type="button" onClick={onCancel} className="flex-1 py-4 rounded-xl font-bold text-on-surface-variant bg-surface-container-high hover:bg-surface-container-highest transition-colors">
-        Cancel
-      </button>
-      <button type="submit" className="flex-[2] bg-primary text-white font-headline font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:bg-emerald-600 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2">
-        Send Invoice
-        <Send className="w-5 h-5" />
-      </button>
+    <div className="space-y-3 pt-4">
+      <div className="flex flex-col sm:flex-row gap-4">
+        <button type="button" onClick={onCancel} className="ct-btn-secondary flex-1">
+          Cancel
+        </button>
+        <button type="submit" className="ct-btn-primary flex-[2]">
+          Send Invoice
+          <Send className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

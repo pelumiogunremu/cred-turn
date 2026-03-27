@@ -13,7 +13,7 @@ export default function PaymentModal() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-md shadow-2xl border border-outline-variant/20"
+        className="bg-surface-container-lowest rounded-3xl p-5 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-outline-variant/20"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold font-headline">Payment Info</h2>
@@ -32,7 +32,7 @@ export default function PaymentModal() {
           <div className="bg-surface-container-low p-4 rounded-2xl space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-on-surface-variant">Date</span>
-              <span className="font-bold">Oct 25, 2026</span>
+              <span className="font-bold">{new Date().toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-on-surface-variant">Method</span>

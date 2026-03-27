@@ -58,11 +58,10 @@ export function DashboardHeader({ userName, onCreateInvoice }: { userName: strin
   );
 }
 
-export function OutstandingCreditCard({ amount, isVisible, onToggleVisibility, onAddCredit, onRepay, nextPayment }: any) {
+export function OutstandingCreditCard({ amount, isVisible, onToggleVisibility, onAddCredit, onRepay, onGoToCard, onPayNow, nextPayment }: any) {
   return (
-    <div 
-      onClick={amount > 0 ? onRepay : onAddCredit}
-      className={`rounded-2xl p-6 flex flex-col justify-between bg-primary shadow-lg shadow-primary/20 relative overflow-hidden transition-all group ${amount > 0 ? 'cursor-pointer hover:shadow-primary/40' : ''}`}
+    <div
+      className={`rounded-2xl p-6 flex flex-col justify-between bg-primary shadow-lg shadow-primary/20 relative overflow-hidden transition-all group`}
     >
       <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all"></div>
       <div className="flex items-center justify-between mb-6 relative z-10">
@@ -72,30 +71,50 @@ export function OutstandingCreditCard({ amount, isVisible, onToggleVisibility, o
             {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
         </div>
-        <button 
-          onClick={(e) => { e.stopPropagation(); amount > 0 ? onRepay() : onAddCredit(); }}
+        {/* Wallet icon → leads to card page (coming soon) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onGoToCard(); }}
           className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shadow-sm backdrop-blur-sm hover:bg-white/30 transition-colors"
-          title={amount > 0 ? "Repay Credit" : "Add Manual Credit"}
+          title="View Credit Card"
         >
-          {amount > 0 ? <Wallet className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          <Wallet className="w-5 h-5" />
         </button>
       </div>
-      <div className="flex items-end justify-between relative z-10 mb-4">
-        <h3 className="text-4xl font-bold font-headline text-white tracking-tight">
+      {/* Amount area click → go to Transactions */}
+      <button
+        type="button"
+        onClick={onRepay}
+        className="flex items-end justify-between relative z-10 mb-4 w-full text-left"
+      >
+        <h3 className="text-3xl lg:text-4xl font-bold font-headline text-white tracking-tight truncate">
           {isVisible ? `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}` : '••••••••'}
         </h3>
-      </div>
-      {nextPayment && isVisible && (
-        <div className="relative z-10 bg-white/10 backdrop-blur-sm rounded-xl p-3 flex items-center justify-between border border-white/10 group-hover:bg-white/20 transition-all">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-white/80" />
-            <span className="text-xs text-white/90 font-medium">
-              Next Payment: <strong className="text-white">₦{nextPayment.outstandingBalance.toLocaleString()}</strong> due <strong className="text-white">{nextPayment.dueDate}</strong>
-            </span>
+      </button>
+      {/* Next payment strip — arrow navigates to that exact invoice's payment page */}
+      <div className="relative z-10 bg-white/10 backdrop-blur-sm rounded-xl p-3 flex items-center justify-between border border-white/10 group-hover:bg-white/15 transition-all">
+        {nextPayment && isVisible ? (
+          <>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <Clock className="w-4 h-4 text-white/80 shrink-0" />
+              <span className="text-xs text-white/90 font-medium truncate">
+                Next: <strong className="text-white">₦{nextPayment.outstandingBalance.toLocaleString()}</strong> due <strong className="text-white">{nextPayment.dueDate}</strong>
+              </span>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onPayNow(nextPayment.id); }}
+              className="ml-3 w-8 h-8 rounded-full bg-white/25 flex items-center justify-center text-white hover:bg-white/40 transition-colors shrink-0"
+              title="Pay this invoice now"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <div className="flex items-center gap-2 w-full">
+            <Clock className="w-4 h-4 text-white/50 shrink-0" />
+            <span className="text-xs text-white/50 font-medium">No pending payments</span>
           </div>
-          <ArrowRight className="w-4 h-4 text-white/80 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0" />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -114,8 +133,8 @@ export function CredTurnScoreCard({ score, onOpenModal, onIncreaseScore }: any) 
             <Info className="w-4 h-4" />
           </div>
         </div>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex flex-col">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 mb-8">
+          <div className="flex flex-col items-center sm:items-start">
             <div className="flex items-baseline gap-1">
               <span className="text-6xl font-extrabold font-headline tracking-tighter text-primary">{score}</span>
               <span className="text-on-surface-variant text-xl font-medium">/ 100</span>
@@ -135,7 +154,7 @@ export function CredTurnScoreCard({ score, onOpenModal, onIncreaseScore }: any) 
           </div>
         </div>
         <div className="flex items-start gap-3 p-4 bg-surface-container-low rounded-xl group-hover:bg-primary/5 transition-colors mb-6">
-          <p className="text-sm text-on-surface-variant leading-relaxed font-medium">Your score reflects your reliability in the Nigerian market. Keep paying on time!</p>
+          <p className="text-sm text-on-surface-variant leading-relaxed font-medium">Pay on time to improve your score. Overdue payments will reduce it.</p>
         </div>
         <button
           onClick={(e) => {
@@ -152,7 +171,7 @@ export function CredTurnScoreCard({ score, onOpenModal, onIncreaseScore }: any) 
   );
 }
 
-export function PaymentModesCarousel({ onSelect }: { onSelect: () => void }) {
+export function PaymentModesCarousel({ onNavigateToPayments }: { onNavigateToPayments: () => void }) {
   const [currentModeIndex, setCurrentModeIndex] = useState(0);
 
   useEffect(() => {
@@ -162,10 +181,12 @@ export function PaymentModesCarousel({ onSelect }: { onSelect: () => void }) {
     return () => clearInterval(timer);
   }, []);
 
+  const handleNext = () => setCurrentModeIndex((prev) => (prev + 1) % PAYMENT_MODES.length);
+
   return (
     <div
       className="bg-surface-container-lowest rounded-2xl border border-outline-variant/15 relative overflow-hidden h-48 cursor-pointer group"
-      onClick={onSelect}
+      onClick={handleNext}
     >
       <AnimatePresence initial={false}>
         <motion.div
@@ -190,9 +211,15 @@ export function PaymentModesCarousel({ onSelect }: { onSelect: () => void }) {
               {PAYMENT_MODES[currentModeIndex].description}
             </p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+          {/* Only the ArrowRight navigates to payments */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onNavigateToPayments(); }}
+            className="w-10 h-10 rounded-full bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-white transition-colors shrink-0"
+            title="Go to Payments"
+          >
             <ArrowRight className="w-5 h-5" />
-          </div>
+          </button>
         </motion.div>
       </AnimatePresence>
      
@@ -218,7 +245,7 @@ export function PaymentModesCarousel({ onSelect }: { onSelect: () => void }) {
 export function InvoiceListCard({ title, invoices, onViewAll, onSelectInvoice, showToast, onPayAction }: any) {
   return (
     <div className="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/15 flex flex-col h-fit">
-      <div className="px-8 py-6 border-b border-surface-container-low flex justify-between items-center">
+      <div className="px-4 sm:px-8 py-6 border-b border-surface-container-low flex justify-between items-center">
         <h2 className="font-headline text-lg font-bold">{title}</h2>
         <button onClick={onViewAll} className="text-primary text-sm font-bold hover:underline">View All</button>
       </div>
@@ -238,7 +265,7 @@ export function InvoiceListCard({ title, invoices, onViewAll, onSelectInvoice, s
               generateInvoicePDF(invoice);
               if (showToast) showToast('Invoice downloaded successfully', 'success');
             }}
-            showPayButton={invoice.type === 'received' && ['Accepted', 'Unpaid', 'Partially Paid', 'Overdue'].includes(invoice.status)}
+            showPayButton={invoice.type === 'received' && ['Not Due', 'Due', 'Partially Paid', 'Overdue'].includes(invoice.status)}
             onPay={onPayAction ? (e) => onPayAction(e, invoice.id) : undefined}
           />
         ))}
