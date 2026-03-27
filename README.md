@@ -1,5 +1,13 @@
 # CredTurn — Reimagining Credit Transactions
 
+<br/>
+
+<p align="center">
+  <img src="assets/credturn-thumbnail.png" alt="CredTurn Banner" width="100%" />
+</p>
+
+<br/>
+
 ## Project Overview
 
 CredTurn is a credit transaction-focused platform that ensures informal credit transactions are completed — not just recorded.
@@ -67,6 +75,10 @@ CredTurn ensures that payments are completed even when buyers are temporarily un
 
 ## System Architecture
 
+<p align="center">
+  <img src="assets/credturn_system_architecture.png" alt="CredTurn System Architecture" width="85%" />
+</p>
+
 CredTurn is built as an interconnected system consisting of:
 
 - Invoice Management System — handles invoice creation, acceptance, and status updates  
@@ -87,6 +99,8 @@ All systems are tightly synchronized to ensure a seamless end-to-end transaction
 - Buyer initiates payment  
 - If unable to pay, fallback options are presented  
 - Payment is completed and system updates instantly  
+
+CredTurn Demo Flow: https://drive.google.com/file/d/14f49ABC1qlI-NGX_5k93mQdhcIY7cW5k/view?usp=sharing
 
 ---
 
